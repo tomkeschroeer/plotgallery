@@ -16,5 +16,7 @@ Of course you can deploy on any web server.
 
 This kit uses 
 
-* Bootstrap web framework
-* some php scripts (to be documented in more detail)
+* [jQuery](jquery.com)
+* [Bootstrap](https://v4-alpha.getbootstrap.com/)
+* [fancyBox3](http://fancyapps.com/fancybox/3/)
+* [TimThumb php script to display images](http://code.google.com/p/timthumb/)
