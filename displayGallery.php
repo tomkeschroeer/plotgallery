@@ -14,23 +14,23 @@
 
      <!-- Custom styles for this template -->
     <link href="navbar-top-fixed.css" rel="stylesheet">
-    <link href="css/table.css" rel="stylesheet">
 
     <!-- Fancybox Gallery -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.min.css" />
 
-    <?php
-    function console_log( $data ){
-      echo '<script>';
-      echo 'console.log('. json_encode( $data ) .')';
-      echo '</script>';
-    }
-    ?>
 
   </head>
 
   <body>
 
+
+    <!-- Start PHP session -->
+    <?php
+    session_start();
+    if (isset($_GET['collection'])) {
+            $_SESSION['collection'] = $_GET["collection"];
+      }
+     ?>
 
    <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse" id=ignorePDF>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,47 +51,33 @@
     </nav>
 
 
-    <div class='container'>
-        <div class="jumbotron" id='object'>
-        <?php
-          $relPath = "./content/";
-          $table = array();
-          $ignore = array(".", "..");
-          $files = scandir($relPath);
-          foreach ($files as $file) {
-          // display all non-hidden directories
-            if(!in_array($file, $ignore)) {
-              $fullPath = $relPath . $file;
-              $displayPath = "displayGallery.php?collection=" . $file;
-              $row = array("name"=>$file, "modified"=>date("d F Y H:i:s",filectime($relPath . $file)), "displayPath"=>$displayPath);
-              array_push($table, $row);
+    <div class="container">
+    <div class="jumbotron">
+
+    <!-- Display content -->
+    <?php
+        if (isset($_SESSION['collection'])) {
+            $collection = $_SESSION["collection"];
+        }
+
+        # Generate heading
+        echo "<p>\n";
+        echo "<h2>".$collection."</h2>\n";
+        echo "<h4>".date("F d Y", filectime("content/".$collection))." - MPI Munich</h4>\n";
+        echo "</p>\n";
+
+        # Display filtered gallery
+        $dirname = "content/".$collection;
+        $filter = $_GET['filter'];;
+        $images = preg_grep('/'.$filter.'/', scandir($dirname));
+        $ignore = array(".", "..");
+        foreach($images as $curimg){
+
+            if(!in_array($curimg, $ignore)) {
+                echo "<a data-fancybox=\"gallery\" data-caption=\"$curimg\" title=\"$curimg\" href=\"$dirname/$curimg\"><img src='php/img.php?src=$dirname/$curimg&w=300&zc=1'> <figcaption width=200px  style=\"word-wrap: break-word; word-break: break-all;\">$curimg</figcaption> </a>";
             }
-          }
-          // table entry manipulation
-
-         // print result
-
-          echo "<h1>Choose an entry</h1>";
-          echo "&nbsp;";
-          echo "&nbsp;";
-          echo "<table>";
-          echo "<tr>";
-          echo "<th>Content name</th>";
-          echo "<th>Last modified</th>";
-          echo "</tr>";
-          foreach ($table as $row){
-            echo "<tr>";
-            $thisLinkPath = $row['displayPath'];
-            $thisLinkName = $row['name'];
-            $thisModified = $row['modified'];
-            echo "<td><a href=$thisLinkPath>$thisLinkName</a></td>";
-            echo "<td>$thisModified</td>";
-            echo "</tr>";
-            }
-          echo "</table>";
-        ?>
-
-        </div>
+        }
+    ?>
     </div>
     </div>
 
