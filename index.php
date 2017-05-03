@@ -67,7 +67,6 @@
               array_push($table, $row);
             }
           }
-          // table entry manipulation
 
          // print result
 
