@@ -8,7 +8,7 @@ To use this, you can clone the project in your web space and **create a folder c
 ### How to get a CERN website
 
 We recommend hosting your CERN website with EOS and cernbox. Documentation is linked here: 
-https://cernbox.web.cern.ch/cernbox/en/web/
+https://cernbox-manual.web.cern.ch/cernbox-manual/en/web/personal_website_content.html#create_personal_space
 
 Of course you can deploy on any web server.
 
