@@ -14,6 +14,8 @@
 
      <!-- Custom styles for this template -->
     <link href="navbar-top-fixed.css" rel="stylesheet">
+    <link href="css/table.css" rel="stylesheet">
+
 
     <!-- Fancybox Gallery -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.min.css" />
@@ -24,18 +26,17 @@
   <body>
 
 
-    <!-- Start PHP session hhhd-->
+    <!-- Start PHP session -->
     <?php
     session_start();
-    $col = "NO COLL FOUND";
     if (isset($_GET['dir'])) {
-            $_SESSION['dir'] = $_GET["dir"];
-            $col = $_GET['dir'];
-      }
+      $_SESSION['dir'] = $_GET["dir"];
+      $col = $_GET['dir'];
+    }
     if (isset($_GET['sample'])) {
-            $sample = $_GET['sample'];
-        }
-    ?>
+          $sample = $_GET['sample'];
+    }
+     ?>
 
    <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse" id=ignorePDF>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +49,7 @@
             <a class="nav-link" href="index.php">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="displaySubstructure.php?collection=<?php echo $col; ?>&sample=<?php echo $sample?>">Back </a>
+          <a class="nav-link" href="displaySubstructure.php?collection=<?php echo $col; ?>&sample=<?php echo $sample?>">Back </a>
           </li>
         </ul>
         <form class="form-inline mt-2 mt-md-0">
@@ -64,18 +65,34 @@
 
     <!-- Display content -->
     <?php
-        if (isset($_GET['collection'])) {
-            $collection = $_GET["collection"];
+      if (isset($_GET['collection'])) {
+        $collection = $_GET["collection"];
+    }
+    if (isset($_GET['dir'])) {
+        $dir= $_GET['dir'];
+    }
+    if (isset($_GET['sample'])) {
+        $sample = $_GET['sample'];
+    }
+    $collection_path = $dir."/".$collection;
+    # Generate heading
+      $relPath = "./content/" . $dir . "/" . $collection;
+      $table = array();
+      $ignore = array(".", "..");
+      $files = scandir($relPath);
+      foreach ($files as $file) {
+      // display all non-hidden directories
+        if(!in_array($file, $ignore)) {
+          $file_array = array();
+          $fullPath = $relPath . "/" .$file;
+          $displayPath = "displayGallery.php?collection=" . $file . "&dir=" . $collection_path; 
+          $row = array("name"=>$file, "modified"=>date("d F Y H:i:s",filectime($relPath . $file)), "displayPath"=>$displayPath);
+          array_push($table, $row);
         }
-        if (isset($_GET['dir'])) {
-            $dir= $_GET['dir'];
-        }
-        if (isset($_GET['sample'])) {
-            $sample = $_GET['sample'];
-        }
-        $collection_path = $dir."/".$collection;
-        $collection_array = explode("/", $collection);
+      }
+
         # Generate heading
+        $collection_array = explode("/", $collection);
         echo "<p>\n";
         echo "<h2>".end($collection_array)."</h2>\n";
         echo "<h4>".date("F d Y", filectime("content/".$collection_path))."</h4>\n";
@@ -83,16 +100,25 @@
         echo "</p>\n";
 
         # Display filtered gallery
-        $dirname = "./content/".$collection_path;
-        $filter = $_GET['filter'];;
-        $images = preg_grep('/'.$filter.'/', scandir($dirname));
-        $ignore = array(".", "..");
-        foreach($images as $curimg){
-
-            if(!in_array($curimg, $ignore)) {
-                echo "<a data-fancybox=\"gallery\" data-caption=\"$curimg\" title=\"$curimg\" href=\"$dirname/$curimg\"><img src='php/img.php?src=$dirname/$curimg&w=300&zc=1'> <figcaption width=200px  style=\"word-wrap: break-word; word-break: break-all;\">$curimg</figcaption> </a>";
-            }
-        }
+        $collection_path = $dir."/".$collection;
+        $dirname = "content/".$collection_path;
+        echo "<h1>Choose an entry</h1>";
+          echo "&nbsp;";
+          echo "<table>";
+          echo "<tr>";
+          echo "<th>Content name</th>";
+          echo "<th>Last modified</th>";
+          echo "</tr>";
+          foreach ($table as $row){
+            echo "<tr>";
+            $thisLinkPath = $row['displayPath'] . "&sample=" .$sample;
+            $thisLinkName = $row['name'];
+            $thisModified = $row['modified'];
+            echo "<td><a href=$thisLinkPath>$thisLinkName</a></td>";
+            echo "<td>$thisModified</td>";
+            echo "</tr>";
+          }
+          echo "</table>";
     ?>
     </div>
     </div>
